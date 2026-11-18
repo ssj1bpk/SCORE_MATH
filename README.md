@@ -1,4 +1,3 @@
-# SCORE_MATH
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
@@ -7,8 +6,8 @@
   <!-- 支援 iPad 全螢幕 Web App 模式 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="9人計分板">
-  <title>9人小組計分板</title>
+  <meta name="apple-mobile-web-app-title" content="3分計分板">
+  <title>9人小組計分板 (3分大獎勵)</title>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
     body {
@@ -30,7 +29,7 @@
       line-height: 28px;
       margin-bottom: 6px;
     }
-    /* 3 欄 × 3 行的九宮格佈局，完美善用螢幕空間，按鈕依舊好按 */
+    /* 3 欄 × 3 行的九宮格佈局 */
     .grid-container {
       flex: 1;
       display: grid;
@@ -51,16 +50,16 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.04);
     }
     
-    /* 9 組高度視覺識別的主題色，方便學生辨認自己的卡片 */
-    .theme-1 { border-color: #60A5FA; background: #EFF6FF; } /* 藍色 */
-    .theme-2 { border-color: #34D399; background: #ECFDF5; } /* 綠色 */
-    .theme-3 { border-color: #FBBF24; background: #FFFBEB; } /* 橙黃 */
-    .theme-4 { border-color: #C084FC; background: #FAF5FF; } /* 紫色 */
-    .theme-5 { border-color: #F87171; background: #FEF2F2; } /* 粉紅 */
-    .theme-6 { border-color: #2DD4BF; background: #F0FDFA; } /* 青綠 */
-    .theme-7 { border-color: #FB923C; background: #FFF7ED; } /* 橙色 */
-    .theme-8 { border-color: #A3E635; background: #F7FEE7; } /* 嫩綠 */
-    .theme-9 { border-color: #F472B6; background: #FDF2F8; } /* 櫻桃粉 */
+    /* 9 組高度視覺識別的主題色 */
+    .theme-1 { border-color: #60A5FA; background: #EFF6FF; } 
+    .theme-2 { border-color: #34D399; background: #ECFDF5; } 
+    .theme-3 { border-color: #FBBF24; background: #FFFBEB; } 
+    .theme-4 { border-color: #C084FC; background: #FAF5FF; } 
+    .theme-5 { border-color: #F87171; background: #FEF2F2; } 
+    .theme-6 { border-color: #2DD4BF; background: #F0FDFA; } 
+    .theme-7 { border-color: #FB923C; background: #FFF7ED; } 
+    .theme-8 { border-color: #A3E635; background: #F7FEE7; } 
+    .theme-9 { border-color: #F472B6; background: #FDF2F8; } 
 
     .card-top {
       display: flex;
@@ -91,25 +90,25 @@
       color: #374151;
     }
 
-    /* 5 顆具象化星星進度槽 */
+    /* 3 顆具象化星星進度槽 */
     .stars-track {
       display: flex;
-      gap: 5px;
+      gap: 12px; /* 拉大間距，讓3顆星在視覺上更清晰、更醒目 */
       background: rgba(255, 255, 255, 0.95);
-      padding: 4px 10px;
+      padding: 6px 20px;
       border-radius: 12px;
     }
     .star-slot {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       color: #D1D5DB;
       transition: all 0.2s ease;
     }
     .star-slot.filled {
       color: #F59E0B;
-      transform: scale(1.15);
+      transform: scale(1.25);
     }
 
-    /* 巨型拍掣按鈕，調整高度以適應 3x3 行高 */
+    /* 拍掣按鈕 */
     .btn-add {
       width: 100%;
       height: 44px;
@@ -156,7 +155,7 @@
       cursor: pointer;
     }
 
-    /* 滿 5 分全螢幕大獎勵視窗 */
+    /* 滿 3 分全螢幕大獎勵視窗 */
     .grand-modal {
       display: none;
       position: fixed;
@@ -199,28 +198,27 @@
 </head>
 <body>
 
-  <div class="header">🌟 9人九宮格課堂計分板 🌟</div>
+  <div class="header">🌟 9人九宮格課堂計分板 (3分大獎勵版) 🌟</div>
 
   <div class="grid-container" id="gridContainer">
-    <!-- 9 位學生的卡片將動態渲染於此 -->
+    <!-- 9 位學生的卡片 -->
   </div>
 
   <div class="footer-bar">
     <button class="btn-reset-all" id="resetAllBtn">重新開始整組計分</button>
   </div>
 
-  <!-- 滿 5 分專屬表揚彈窗 -->
+  <!-- 滿 3 分專屬表揚彈窗 -->
   <div class="grand-modal" id="grandModal">
     <div class="modal-card">
       <div class="modal-winner" id="winnerName">學生姓名</div>
       <div class="modal-icon">🏆</div>
-      <div style="font-size: 2rem; font-weight: bold; color: #374151;">太棒了！累積滿 5 粒星！</div>
+      <div style="font-size: 2rem; font-weight: bold; color: #374151;">太棒了！累積滿 3 粒星！</div>
       <button class="btn-confirm" id="modalCloseBtn">繼續努力 👏</button>
     </div>
   </div>
 
   <script>
-    // 預設 9 位同學清單及動物代表物
     const students = [
       { id: 1, name: "小熊", icon: "🐻", theme: "theme-1", score: 0 },
       { id: 2, name: "小兔", icon: "🐰", theme: "theme-2", score: 0 },
@@ -244,7 +242,7 @@
         const g = audioCtx.createGain();
         osc.frequency.value = f;
         g.gain.setValueAtTime(0.12, audioCtx.currentTime + i * 0.08);
-        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.08 + 0.25);
+        g.gain.exponentialRampToValueAtTime(0.001, i * 0.08 + 0.25);
         osc.connect(g);
         g.connect(audioCtx.destination);
         osc.start(audioCtx.currentTime + i * 0.08);
@@ -252,7 +250,7 @@
       });
     }
 
-    // 滿 5 分勝利號角長音
+    // 滿 3 分勝利號角長音
     function playFanfare() {
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const fanfare = [
@@ -280,17 +278,16 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const resetAllBtn = document.getElementById('resetAllBtn');
 
-    // 動態渲染 9 宮格
     function renderCards() {
       container.innerHTML = '';
       students.forEach((stu, index) => {
         const card = document.createElement('div');
         card.className = `student-card ${stu.theme}`;
 
-        // 星星進度（滿 5 顆自動重置成全亮）
-        const filledStars = stu.score % 5 === 0 && stu.score > 0 ? 5 : stu.score % 5;
+        // 星星進度槽：改為 3 分循環（累積滿3顆星即觸發慶祝，保留總分）
+        const filledStars = stu.score % 3 === 0 && stu.score > 0 ? 3 : stu.score % 3;
         let starsHtml = '';
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 3; i++) {
           starsHtml += `<span class="star-slot ${i <= filledStars ? 'filled' : ''}">★</span>`;
         }
 
@@ -298,7 +295,7 @@
           <div class="card-top">
             <div class="avatar-name-group">
               <span class="avatar">${stu.icon}</span>
-              <span class="student-name" onclick="renameStudent(\${index})" title="點擊修改名字">\${stu.name}</span>
+              <span class="student-name" onclick="renameStudent(${index})" title="點擊修改名字">${stu.name}</span>
             </div>
             <span class="score-number">${stu.score}分</span>
           </div>
@@ -316,8 +313,36 @@
       students[index].score += 1;
       renderCards();
 
-      // 每累積 5 分（如第 5, 10, 15 分）即刻觸發慶祝彈窗
-      if (students[index].score % 5 === 0) {
+      // 每累積 3 分（3, 6, 9...）即刻觸發大獎勵
+      if (students[index].score % 3 === 0) {
         playFanfare();
         winnerName.innerText = `🎉 ${students[index].name} 🎉`;
-        grandModal.classList.add(
+        grandModal.classList.add('active');
+      } else {
+        playPing();
+      }
+    };
+
+    window.renameStudent = function(index) {
+      const newName = prompt("請輸入新學生名字：", students[index].name);
+      if (newName && newName.trim() !== "") {
+        students[index].name = newName.trim();
+        renderCards();
+      }
+    };
+
+    modalCloseBtn.addEventListener('click', () => {
+      grandModal.classList.remove('active');
+    });
+
+    resetAllBtn.addEventListener('click', () => {
+      if (confirm('確定要將全班 9 位同學的分數全部歸零嗎？')) {
+        students.forEach(s => s.score = 0);
+        renderCards();
+      }
+    });
+
+    renderCards();
+  </script>
+</body>
+</html>
